@@ -39,7 +39,7 @@ export interface UserModel {
     nickname: string,
     email: string,
     password: string,
-    role: string,
+    role: USER_ROLES,
     createdAt: string
 }
 
@@ -48,7 +48,7 @@ export interface UserDB {
     nickname: string,
     email: string,
     password: string,
-    role: string,
+    role: USER_ROLES,
     created_at: string
 }
 

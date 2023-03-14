@@ -70,3 +70,5 @@ CREATE TABLE comment_likes_dislikes (
         ON UPDATE CASCADE
 );
 
+SELECT * FROM users;
+
