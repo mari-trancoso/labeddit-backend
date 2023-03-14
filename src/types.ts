@@ -34,6 +34,18 @@ export interface PostDB {
     comments: number
 }
 
+export interface PostsWithCreatorDB {
+    id: string,
+    creator_id: string,
+    content: string,
+    likes: number,
+    dislikes: number,
+    created_at: string,
+    updated_at: string,
+    comments: number,
+    creator_nickname: string
+}
+
 export interface UserModel {
     id: string,
     nickname: string,
@@ -73,3 +85,4 @@ export interface CommentModel {
     createdAt: string,
     updatedAt: string
 }
+
