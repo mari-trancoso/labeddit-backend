@@ -45,4 +45,11 @@ export class PostDatabase extends BaseDatabase {
             .where({id: idToEdit})
     }
 
+    public delete = async(idToDelete: string) :Promise<void> => {
+        await BaseDatabase
+            .connection(PostDatabase.TABLE_POSTS)
+            .delete()
+            .where({id: idToDelete})
+    }
+
 }
