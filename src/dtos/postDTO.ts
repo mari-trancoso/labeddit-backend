@@ -7,7 +7,8 @@ export interface GetPostsInputDTO {
 export type GetPostsOutputDTO = PostModel[]
 
 export interface CreatePostsInputDTO {
-    token: string | undefined
+    token: string | undefined,
+    content: string | undefined
 }
 
 export interface EditPostsInputDTO {
