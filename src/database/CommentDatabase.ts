@@ -1,4 +1,4 @@
-import { CommentDB } from "../types"
+import { CommentDB, PostDB } from "../types"
 import { BaseDatabase } from "./BaseDatabase"
 
 export class CommentDatabase extends BaseDatabase {
@@ -6,6 +6,18 @@ export class CommentDatabase extends BaseDatabase {
     public static TABLE_POSTS = "posts"
     public static TABLE_USERS = "users"
     public static TABLE_COMMENTS_LIKES_DISLIKES = "comment_likes_dislikes"
+
+    public findById = async(postId: string): Promise<PostDB | undefined> => {
+        const result = await BaseDatabase
+            .connection(CommentDatabase.TABLE_POSTS)
+            .select()
+            .where({id: postId})
+        
+        console.log(postId)
+        console.log(result)
+        
+        return result[0]
+    }
 
     public commentsWithPost = async () => {
         const result: CommentDB[] = await BaseDatabase
@@ -26,5 +38,11 @@ export class CommentDatabase extends BaseDatabase {
             .join("posts", "comments.post_id", "=", "posts.id")
 
             return result
+    }
+
+    public insert = async (commentDB: CommentDB): Promise<void> => {
+        await BaseDatabase
+            .connection(CommentDatabase.TABLE_COMMENTS)
+            .insert(commentDB)
     }
 }
