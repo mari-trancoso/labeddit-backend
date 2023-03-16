@@ -8,7 +8,9 @@ export interface GetCommentsInputDTO {
 export type GetCommentsOutputDTO = CommentModel[]
 
 export interface CreateCommentInputDTO {
-    token: string | undefined
+    token: string | undefined,
+    postId: string,
+    content: unknown
 }
 
 export interface EditCommentInputDTO {

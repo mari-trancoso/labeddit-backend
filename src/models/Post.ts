@@ -67,6 +67,12 @@ export class Post {
     public setComments(value: number): void {
         this.comments = value
     }
+    public addComments(){
+        this.comments += 1
+    }
+    public removeComments(){
+        this.comments -= 1
+    }
     public getCreatorId(): string {
         return this.creatorId
     }
