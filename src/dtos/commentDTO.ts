@@ -2,6 +2,7 @@ import { CommentModel } from "../types"
 
 export interface GetCommentsInputDTO {
     token: string | undefined
+    id: string
 }
 
 export type GetCommentsOutputDTO = CommentModel[]

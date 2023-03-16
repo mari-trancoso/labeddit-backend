@@ -14,3 +14,5 @@ const commentController = new CommentController(
         new TokenManager()
     )
 )
+
+commentRouter.get("/:id", commentController.getComments)
