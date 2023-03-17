@@ -1,5 +1,5 @@
 import { CommentBusiness } from "../business/CommentBusiness";
-import { CreateCommentInputDTO, DeleteCommentInputDTO, GetCommentsInputDTO } from "../dtos/commentDTO";
+import { CreateCommentInputDTO, DeleteCommentInputDTO, GetCommentsInputDTO, LikeOrDislikeCommentInputDTO } from "../dtos/commentDTO";
 import { Request, Response } from "express";
 import { BaseError } from "../errors/BaseError";
 
@@ -63,6 +63,28 @@ export class CommentController {
             res.status(200).end()
 
         } catch (error) {
+            console.log(error)
+            if (error instanceof BaseError) {
+                res.status(error.statusCode).send(error.message)
+            } else {
+                res.status(500).send("Erro inesperado")
+            }
+        }
+    }
+
+    public likeOrDislikeComments = async(req:Request, res:Response) => {
+        try{
+           const input: LikeOrDislikeCommentInputDTO = {
+            idToLikeOrDislike: req.params.id,
+            token: req.headers.authorization,
+            like: req.body.like
+           }
+
+           await this.commentBusiness.likeOrDislikeComment(input)
+
+           res.status(200).end()
+
+        } catch (error){
             console.log(error)
             if (error instanceof BaseError) {
                 res.status(error.statusCode).send(error.message)

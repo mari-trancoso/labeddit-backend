@@ -1,13 +1,13 @@
 import { CommentDatabase } from "../database/CommentDatabase";
 import { PostDatabase } from "../database/PostDatabase";
-import { CreateCommentInputDTO, DeleteCommentInputDTO, GetCommentsInputDTO, GetCommentsOutputDTO } from "../dtos/commentDTO";
+import { CreateCommentInputDTO, DeleteCommentInputDTO, GetCommentsInputDTO, GetCommentsOutputDTO, LikeOrDislikeCommentInputDTO } from "../dtos/commentDTO";
 import { BadRequestError } from "../errors/BadRequestError";
 import { NotFoundError } from "../errors/NotFoundError";
 import { Comment } from "../models/Comment";
 import { Post } from "../models/Post";
 import { IdGenerator } from "../services/IdGenerator";
 import { TokenManager } from "../services/TokenManager";
-import { CommentDB } from "../types";
+import { CommentDB, COMMENT_LIKE, LikeDislikeCommentDB, LikeDislikeDB } from "../types";
 
 export class CommentBusiness {
     constructor(
@@ -173,6 +173,88 @@ export class CommentBusiness {
 
         await this.postDatabase.update(postId, updatedPostDB)
 
+    }
+
+    public likeOrDislikeComment = async (input: LikeOrDislikeCommentInputDTO): Promise<void> => {
+        const { token, like, idToLikeOrDislike } = input
+
+        if (token === undefined) {
+            throw new BadRequestError("'token' ausente")
+        }
+
+        const payload = this.tokenManager.getPayload(token)
+
+        if (payload === null) {
+            throw new BadRequestError("'token' inválido")
+        }
+
+        if (typeof like !== "boolean") {
+            throw new BadRequestError("'like' deve ser booleano")
+        }
+
+        const commentWithCreatorDB = await this.commentDatabase.findCommentsByIdToLikeOrDislike(idToLikeOrDislike)
+
+        if (!commentWithCreatorDB) {
+            throw new NotFoundError("'id' não encontrado")
+        }
+
+        const userId = payload.id
+        const likeSQLite = like ? 1 : 0
+
+        const likeDislike: LikeDislikeCommentDB = {
+            user_id: userId,
+            comment_id: idToLikeOrDislike,
+            like: likeSQLite
+        }
+
+        const commentLikedOrDisliked = await this.commentDatabase.findLikeDislike(likeDislike)
+
+        const comment = new Comment(
+            commentWithCreatorDB.id,
+            commentWithCreatorDB.creator_id,
+            commentWithCreatorDB.post_id,
+            commentWithCreatorDB.content,
+            commentWithCreatorDB.likes,
+            commentWithCreatorDB.dislikes,
+            commentWithCreatorDB.created_at,
+            commentWithCreatorDB.updated_at,
+        )
+
+        if (commentLikedOrDisliked === COMMENT_LIKE.ALREADY_LIKED) {
+            if (like) {
+                await this.commentDatabase.removeLike(likeDislike)
+                comment.removeLikes()
+
+            } else {
+                await this.commentDatabase.updateLikeDislike
+                    (likeDislike)
+                comment.removeLikes()
+                comment.addDislikes()
+            }
+        } else if (commentLikedOrDisliked === COMMENT_LIKE.ALREADY_DISLIKED) {
+            if (like) {
+                await this.commentDatabase.updateLikeDislike
+                    (likeDislike)
+                comment.removeLikes()
+                comment.addLikes()
+
+            } else {
+                await this.commentDatabase.removeLike(likeDislike)
+                comment.removeDislikes()
+
+            }
+
+        } else {
+            await this.commentDatabase.likeOrDislikeComment(likeDislike)
+
+            like ? comment.addLikes() : comment.addDislikes()
+
+        }
+
+        const updatComment = comment.toDBModel()
+        console.log("chegou na business")
+
+        await this.commentDatabase.update(idToLikeOrDislike, updatComment)
 
 
     }
