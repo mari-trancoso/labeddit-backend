@@ -19,6 +19,18 @@ export class CommentDatabase extends BaseDatabase {
         return result[0]
     }
 
+    public findCommentsById = async(postId: string): Promise<CommentDB | undefined> => {
+        const result = await BaseDatabase
+            .connection(CommentDatabase.TABLE_COMMENTS)
+            .select()
+            .where({id: postId})
+        
+        console.log(postId)
+        console.log(result)
+        
+        return result[0]
+    }
+
     public commentsWithPost = async () => {
         const result: CommentDB[] = await BaseDatabase
             .connection(CommentDatabase.TABLE_COMMENTS)
@@ -44,5 +56,12 @@ export class CommentDatabase extends BaseDatabase {
         await BaseDatabase
             .connection(CommentDatabase.TABLE_COMMENTS)
             .insert(commentDB)
+    }
+
+    public delete = async(postIdToDelete: string) :Promise<void> => {
+        await BaseDatabase
+            .connection(CommentDatabase.TABLE_COMMENTS)
+            .delete()
+            .where({id: postIdToDelete})
     }
 }

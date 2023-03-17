@@ -1,6 +1,6 @@
 import { CommentDatabase } from "../database/CommentDatabase";
 import { PostDatabase } from "../database/PostDatabase";
-import { CreateCommentInputDTO, GetCommentsInputDTO, GetCommentsOutputDTO } from "../dtos/commentDTO";
+import { CreateCommentInputDTO, DeleteCommentInputDTO, GetCommentsInputDTO, GetCommentsOutputDTO } from "../dtos/commentDTO";
 import { BadRequestError } from "../errors/BadRequestError";
 import { NotFoundError } from "../errors/NotFoundError";
 import { Comment } from "../models/Comment";
@@ -114,6 +114,67 @@ export class CommentBusiness {
         const updatedPostDB = post.toDBModel()
 
         await this.postDatabase.update(postId, updatedPostDB)
+    }
+
+    public deleteComments = async (input: DeleteCommentInputDTO): Promise<void> => {
+        const { token, idToDelete } = input
+
+        if (token === undefined) {
+            throw new BadRequestError("'token' ausente")
+        }
+
+        const payload = this.tokenManager.getPayload(token)
+
+        if (payload === null) {
+            throw new BadRequestError("'token' inválido")
+        }
+
+        const commentsExist = await this.commentDatabase.findCommentsById(idToDelete)
+
+        if(!commentsExist){
+            throw new NotFoundError("'id' não encontrado")
+        }
+
+        const creatorId = payload.id
+
+        if (commentsExist.creator_id !== creatorId) {
+            throw new BadRequestError("Somente quem criou o comentário pode deletá-lo.")
+        }
+
+        await this.commentDatabase.delete(idToDelete)
+
+        console.log(commentsExist)
+        
+        const postId = commentsExist.post_id
+
+        const postExist = await this.commentDatabase.findById(postId)
+
+        if(!postExist){
+            throw new NotFoundError("'id' não encontrado")
+        }
+
+        const creatorIdPost = payload.id
+        const creatorNickname = payload.nickname
+
+        const post = new Post(
+            postExist.id,
+            postExist.content,
+            postExist.likes,
+            postExist.dislikes,
+            postExist.created_at,
+            postExist.updated_at,
+            postExist.comments,
+            creatorIdPost,
+            creatorNickname
+        )
+
+        post.removeComments()
+        const updatedPostDB = post.toDBModel()
+
+        await this.postDatabase.update(postId, updatedPostDB)
+
+
+
     }
 
 }
