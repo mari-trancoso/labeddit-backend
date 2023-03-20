@@ -109,4 +109,11 @@ export class UserBusiness {
         
     }
 
+    public getAllUsers = async () : Promise<UserDB[]>=> {
+        
+        const output = await this.userDatabase.getAllUsers()
+
+        return output
+    }
+
 }
