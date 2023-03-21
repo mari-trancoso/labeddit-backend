@@ -8,7 +8,7 @@
 <li>Postar um texto, curtir e descurtir</li>
 <li>Postar comentários nos textos</li>
 
-
 Site da documentação da API <https://documenter.getpostman.com/view/24460907/2s93JzM12j>
 
 Site do deploy no render <https://labeddit-backend-cjiu.onrender.com>
+
