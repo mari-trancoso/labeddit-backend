@@ -54,8 +54,14 @@ export class UserController {
     public getAllUsers = async (req: Request, res: Response) => {
         try{
 
-            const output = await this.userBusiness.getAllUsers()
+            const input = {
+                q: req.query.q,
+                
+            }
 
+            const output = await this.userBusiness.getAllUsers(input)
+
+            
             res.status(200).send(output)
 
         } catch (error){
