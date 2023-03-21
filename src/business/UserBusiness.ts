@@ -109,11 +109,22 @@ export class UserBusiness {
         
     }
 
-    public getAllUsers = async () : Promise<UserDB[]>=> {
+    public getAllUsers = async (input: any)=> {
         
-        const output = await this.userDatabase.getAllUsers()
+        const { q } = input
 
-        return output
+        const usersDB = await this.userDatabase.getAllUsers(q)
+
+        const users: User[] = usersDB.map((userDB) => new User(
+                userDB.id,
+                userDB.nickname,
+                userDB.email,
+                userDB.password,
+                userDB.role,
+                userDB.created_at
+        ))
+    
+        return users
     }
 
 }

@@ -19,13 +19,27 @@ export class UserDatabase extends BaseDatabase {
         return result[0]
     }
 
-    public getAllUsers = async () => {
-        const result: UserDB[] = await BaseDatabase
-            .connection(UserDatabase.TABLE_USERS)
-            .select()
+    // public getAllUsers = async () => {
+    //     const result: UserDB[] = await BaseDatabase
+    //         .connection(UserDatabase.TABLE_USERS)
+    //         .select()
             
 
+    //         return result
+    // }
+
+    public async getAllUsers(q: string | undefined): Promise<UserDB[]> {
+        if(q) {
+            const result: UserDB[] = await BaseDatabase
+                .connection(UserDatabase.TABLE_USERS)
+                .where("name", "LIKE", `%${q}%`)
+                .orWhere("id", "LIKE", `%${q}%`)
+                return result
+        } else {
+            const result: UserDB[] = await BaseDatabase
+                .connection(UserDatabase.TABLE_USERS)
             return result
+        }
     }
 
 }
