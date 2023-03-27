@@ -7,7 +7,7 @@ import { Comment } from "../models/Comment";
 import { Post } from "../models/Post";
 import { IdGenerator } from "../services/IdGenerator";
 import { TokenManager } from "../services/TokenManager";
-import { CommentDB, COMMENT_LIKE, LikeDislikeCommentDB, LikeDislikeDB } from "../types";
+import { CommentDB, CommentModelWithCreator, COMMENT_LIKE, LikeDislikeCommentDB, LikeDislikeDB } from "../types";
 
 export class CommentBusiness {
     constructor(
@@ -18,7 +18,7 @@ export class CommentBusiness {
     ) { }
 
     public getComments = async (input: GetCommentsInputDTO): Promise<GetCommentsOutputDTO> => {
-        const { token, id } = input
+        const { token, postId } = input
 
         if (token === undefined) {
             throw new BadRequestError("'token' ausente")
@@ -29,25 +29,33 @@ export class CommentBusiness {
         if (payload === null) {
             throw new BadRequestError("'token' inválido")
         }
+        
+        // const commentsByPostId = await this.commentDatabase.findCommentsByPostId(postId)
+        const commentsByPostId = await this.commentDatabase.commentsWithCreator(postId)
 
-        const commentsWithPostDB: CommentDB[] = await this.commentDatabase.commentsWithPost()
+        console.log(commentsByPostId)
 
-        const comments = commentsWithPostDB.map((commentWithPostDB) => {
-            const comment = new Comment(
-                commentWithPostDB.id,
-                commentWithPostDB.creator_id,
-                commentWithPostDB.post_id,
-                commentWithPostDB.content,
-                commentWithPostDB.likes,
-                commentWithPostDB.dislikes,
-                commentWithPostDB.created_at,
-                commentWithPostDB.updated_at
-            )
+        // const commentsWithPostDB: CommentDB[] = await this.commentDatabase.commentsWithPost()
 
-            return comment.toBusinessModel()
-        })
+        // const comments = commentsByPostId.map((commentWithPostDB) => {
 
-        const output: GetCommentsOutputDTO = comments
+        //     const comment = (
+        //         commentWithPostDB.id,
+        //         commentWithPostDB.creator_id,
+        //         commentWithPostDB.post_id,
+        //         commentWithPostDB.content,
+        //         commentWithPostDB.likes,
+        //         commentWithPostDB.dislikes,
+        //         commentWithPostDB.created_at,
+        //         commentWithPostDB.updated_at,
+        //         commentWithPostDB.creator_nickname
+                
+        //     )
+
+        //     return comment
+        // })
+
+        const output: GetCommentsOutputDTO = commentsByPostId
 
         return output
     }
