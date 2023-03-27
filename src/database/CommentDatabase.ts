@@ -1,4 +1,4 @@
-import { CommentDB, COMMENT_LIKE, LikeDislikeCommentDB, LikeDislikeDB, PostDB } from "../types"
+import { CommentDB, CommentDBWithCreator, COMMENT_LIKE, LikeDislikeCommentDB, LikeDislikeDB, PostDB } from "../types"
 import { BaseDatabase } from "./BaseDatabase"
 
 export class CommentDatabase extends BaseDatabase {
@@ -6,6 +6,35 @@ export class CommentDatabase extends BaseDatabase {
     public static TABLE_POSTS = "posts"
     public static TABLE_USERS = "users"
     public static TABLE_COMMENTS_LIKES_DISLIKES = "comment_likes_dislikes"
+    
+    public async findCommentsByPostId(postId: string | undefined) : Promise<CommentDB[]> {
+        const result: CommentDB[] = await BaseDatabase.connection(CommentDatabase.TABLE_COMMENTS)
+            .where({  post_id: postId })
+            console.log(result)
+
+        return result
+    }
+
+    public commentsWithCreator = async (postId: string | undefined) : Promise<CommentDBWithCreator[]> => {
+        const result: CommentDBWithCreator[] = await BaseDatabase
+            .connection(CommentDatabase.TABLE_COMMENTS)
+            .where({  post_id: postId })
+            .select(
+                "comments.id",
+                "comments.creator_id",
+                "comments.post_id",
+                "comments.content",
+                "comments.likes",
+                "comments.dislikes",
+                "comments.created_at",
+                "comments.updated_at",
+                "users.nickname AS creator_nickname"
+            )
+            .join("users", "comments.creator_id", "=", "users.id")
+
+            // console.log(result)
+            return result
+    }
 
     public findById = async(postId: string): Promise<PostDB | undefined> => {
         const result = await BaseDatabase

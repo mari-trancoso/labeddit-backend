@@ -1,4 +1,4 @@
-import { CommentDB, CommentModel } from "../types";
+import { CommentDB, CommentModel, CommentModelWithCreator } from "../types";
 
 export class Comment {
     constructor(
@@ -98,4 +98,5 @@ export class Comment {
             updatedAt: this.updatedAt
         }
     }
+
 }

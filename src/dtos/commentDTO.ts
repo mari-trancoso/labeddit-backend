@@ -1,11 +1,11 @@
-import { CommentModel } from "../types"
+import { CommentModel, CommentModelWithCreator } from "../types"
 
 export interface GetCommentsInputDTO {
     token: string | undefined
-    id: string
+    postId: string
 }
 
-export type GetCommentsOutputDTO = CommentModel[]
+export type GetCommentsOutputDTO = CommentModelWithCreator[]
 
 export interface CreateCommentInputDTO {
     token: string | undefined,

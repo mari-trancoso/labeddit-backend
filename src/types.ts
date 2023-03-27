@@ -75,6 +75,18 @@ export interface CommentDB {
     updated_at: string
 }
 
+export interface CommentDBWithCreator {
+    id: string,
+    creator_id: string,
+    post_id: string,
+    content: string,
+    likes: number,
+    dislikes: number,
+    created_at: string,
+    updated_at: string,
+    creator_nickname: string
+}
+
 export interface CommentModel {
     id: string,
     creatorId: string,
@@ -84,6 +96,18 @@ export interface CommentModel {
     dislikes: number,
     createdAt: string,
     updatedAt: string
+}
+
+export interface CommentModelWithCreator {
+    id: string,
+    creator_id: string,
+    post_id: string,
+    content: string,
+    likes: number,
+    dislikes: number,
+    created_at: string,
+    updated_at: string,
+    creator_nickname: string
 }
 
 export interface LikeDislikeDB {
